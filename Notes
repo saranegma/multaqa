@@ -1,0 +1,11 @@
+npm init -y
+
+libraries
+npm install express mongoose bcrypt jsonwebtoken
+npm install cors
+npm install mongodb
+npm install multer
+npm install dotenv
+////////////////new///////
+npm install ejs 
+npm install express express-session
