@@ -10,9 +10,8 @@ exports.register = async function (req, res) {
         newUser.password = hashedPassword;
 
         let user = await newUser.save();
-        const token = await user.generateAuthToken();
-
-        return res.status(200).json({ message: "User registered successfully"});
+        console.log(user);
+        return res.status(200).json({ message: "User registered successfully", data : user });
     } catch (error) {
         return res.status(400).send({ message: error.message });
     }
