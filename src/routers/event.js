@@ -1,39 +1,62 @@
-const express = require ('express')
-const Event = require('../models/event')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const mongoose = require('mongoose'); // Ensure mongoose is imported
+const Event = require('../models/event'); // Assuming this is your Mongoose Event model
 
 //////////create event////////////////
 
-router.post('/event', async (req, res) => {
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+const { ObjectId } = mongoose.Types;
+
+router.post('/event', upload.single('image'), async (req, res) => {
     try {
+        const user_id = req.body.user_id;
+        if (!user_id) {
+            throw new Error('user_id is required');
+        }
+
         const eventData = {
             title: req.body.title,
             description: req.body.description,
-            type: req.body.type,
             time: req.body.time,
             date: req.body.date,
             location: req.body.location,
-            category_id: req.body.category_id // Include if provided
+            user_id: new ObjectId(user_id), // Create a new ObjectId instance
+            category_id: req.body.category_id ? new ObjectId(req.body.category_id) : undefined // Create a new ObjectId instance if provided
         };
+
+        if (req.file) {
+            eventData.image = req.file.buffer.toString('base64');
+            // Alternatively, store it in a cloud service and save the URL
+        }
 
         const event = new Event(eventData);
         await event.save();
         res.status(200).send(event);
     } catch (e) {
+        console.error('Error creating event:', e);
         res.status(400).send({ error: e.message });
     }
 });
 
+module.exports = router;
+
 //////////////////GET//////////////////////////
 
-router.get('/event', async (req, res) => {
+router.get('/events', async (req, res) => {
     try {
         const events = await Event.find();
-        res.status(200).send(events);
+        res.status(200).json(events);
     } catch (error) {
-        res.status(500).send({ message: error.message });
+        console.error('Error fetching events:', error);
+        res.status(500).json({ message: 'Failed to fetch events' });
     }
 });
+
+module.exports = router;
 
 //////////////////////GET (search) BY ID////////////////////////////
 
@@ -52,7 +75,7 @@ router.get('/event', async (req, res) => {
 ////////////////search by  Event's Name////////
 
 //// ya shereine mynfash ykoon v search be id and name both lazem whada bs 
-router.get('/event/search', async (req, res) => {
+router.get('/event/search/title', async (req, res) => {
     try {
         const searchQuery = req.query.title; 
         if (!searchQuery) {

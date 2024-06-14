@@ -1,18 +1,14 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const help = require("mongoose-sequence")(mongoose)
+const help = require("mongoose-sequence")(mongoose);
 delete mongoose.connection.models['Event'];
 
-const eventsSchema= new mongoose.Schema({
+const eventsSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
     },
     description: {
-        type: String,
-        required: true
-    },
-    type: {
         type: String,
         required: true
     },
@@ -28,10 +24,10 @@ const eventsSchema= new mongoose.Schema({
         type: String,
         required: true
     },
-    user_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'user',
-        required:false
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
     },
     category_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -41,9 +37,15 @@ const eventsSchema= new mongoose.Schema({
     eventNumber: {
         type: Number,
         unique: true
-    }
+    },
+    image: {
+        type: String,
+        required: false
+    } // URL
 });
+
 eventsSchema.plugin(help, { inc_field: 'eventNumber' });
+
 const Event = mongoose.model('Event', eventsSchema);
 
 module.exports = Event;

@@ -24,11 +24,11 @@ const ticketSchema = new mongoose.Schema ( {
     number_of_tickets: {
         type: Number
     },
-    sales_channel: {
-        type: String,
-        required: true,
-        trim: true
-    }
+    // sales_channel: {
+    //     type: String,
+    //     required: true,
+    //     trim: true
+    // }
 })
 
 const Ticket = mongoose.model( 'Ticket' , ticketSchema  )

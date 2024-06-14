@@ -141,23 +141,27 @@ router.patch('/users/update-password/:email', async (req, res) => {
 // Route for updating all
 
 router.patch('/users/:email', async (req, res) => {
+  const updates = Object.keys(req.body);
+
   try {
-      const updates = Object.keys(req.body);
-      const user = await User.findOne({ email: req.params.email });
-      if (!user) {
-          return res.status(404).send('No user found');
-      }
+    const user = await User.findOne({ email: req.params.email });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
 
-      updates.forEach((update) => {
-        user[update] = req.body[update];
-      });
+    updates.forEach((update) => {
+      user[update] = req.body[update];
+    });
 
-      await user.save();
-      // console.log('User updated successfully:', user);  // Log the updated user for confirmation
-      res.status(200).send(user);
+    await user.save();
+    res.status(200).send(user); // Respond with updated user data
   } catch (error) {
-      // console.error('Error updating user:', error);
-      res.status(400).send({ message: 'Failed to update information', error: error.message });
+    if (error.name === 'ValidationError') {
+      console.error('Validation Error:', error.errors);
+      return res.status(400).send({ message: 'Validation error', error: error.errors });
+    }
+    console.error('Error updating user:', error);
+    res.status(500).send({ message: 'Failed to update information', error: error.message });
   }
 });
 

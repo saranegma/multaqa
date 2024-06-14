@@ -9,3 +9,4 @@ npm install dotenv
 ////////////////new///////
 npm install ejs 
 npm install express express-session
+npm install multer

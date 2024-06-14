@@ -26,7 +26,7 @@ const ticketChannel = require('./src/routers/ticket-channel.js')
 const plan = require('./src/routers/plan.js')
 const userPhone = require('./src/routers/user-phone.js')
 const contactUs = require('./src/routers/contact.js')
-const eventRouter = require("./src/routers/event.js")
+const event = require("./src/routers/event.js")
 
 app.use(cors());
 // app.use(bodyParser.json());
@@ -62,13 +62,16 @@ app.use(ticketChannel)
 app.use(plan)
 app.use(userPhone)
 app.use(contactUs)
-app.use(eventRouter)
+app.use(event)
 
 ///////////////////////////////////////////////////////////
 app.get('/organizer', (req, res) => res.send('Organizer Page'));
 app.get('/events', (req, res) => res.send('Attendee Page'));
 
+const path = require('path');
 
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(5000, () => {
     console.log('Server is running on port 5000')
