@@ -6,14 +6,26 @@ const router = express.Router();
 
 router.post('/tickets', async (req, res) => {
     try {
-        const ticket = new Ticket(req.body);
-        await ticket.save();
-        res.status(201).send(ticket);
-    } catch (e) {
-        res.status(400).send(e);
+      const { eventId, ...ticketData } = req.body;
+  
+      if (!eventId) {
+        return res.status(400).json({ error: 'eventId is required' });
+      }
+  
+      // Create ticket with provided eventId
+      const ticket = new Ticket({
+        ...ticketData,
+        eventId: eventId,
+      });
+  
+      await ticket.save();
+      res.status(201).json(ticket); // Respond with created ticket data
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      res.status(400).json({ error: error.message || 'Failed to create ticket' });
     }
-});
-
+  });
+    
 //////////////////GET//////////////////////////
 
 router.get('/tickets', async (req, res) => {

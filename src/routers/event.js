@@ -12,34 +12,37 @@ const upload = multer({ storage: storage });
 const { ObjectId } = mongoose.Types;
 
 router.post('/event', upload.single('image'), async (req, res) => {
-    try {
-        const user_id = req.body.user_id;
-        if (!user_id) {
-            throw new Error('user_id is required');
-        }
-
-        const eventData = {
-            title: req.body.title,
-            description: req.body.description,
-            time: req.body.time,
-            date: req.body.date,
-            location: req.body.location,
-            user_id: new ObjectId(user_id), // Create a new ObjectId instance
-            category_id: req.body.category_id ? new ObjectId(req.body.category_id) : undefined // Create a new ObjectId instance if provided
-        };
-
-        if (req.file) {
-            eventData.image = req.file.buffer.toString('base64');
-            // Alternatively, store it in a cloud service and save the URL
-        }
-
-        const event = new Event(eventData);
-        await event.save();
-        res.status(200).send(event);
-    } catch (e) {
-        console.error('Error creating event:', e);
-        res.status(400).send({ error: e.message });
+  try {
+    const user_id = req.body.user_id;
+    if (!user_id) {
+      throw new Error('user_id is required');
     }
+
+    const eventData = {
+      title: req.body.title,
+      description: req.body.description,
+      time: req.body.time,
+      date: req.body.date,
+      location: req.body.location,
+      user_id: new ObjectId(user_id), // Create a new ObjectId instance
+      category_id: req.body.category_id ? new ObjectId(req.body.category_id) : undefined, // Create a new ObjectId instance if provided
+    };
+
+    if (req.file) {
+      eventData.image = req.file.buffer.toString('base64');
+      // Alternatively, store it in a cloud service and save the URL
+    }
+
+    const event = new Event(eventData);
+    await event.save();
+
+    // Send back the event with _id in the response
+    res.status(200).json({ event });
+
+  } catch (e) {
+    console.error('Error creating event:', e);
+    res.status(400).json({ error: e.message });
+  }
 });
 
 module.exports = router;

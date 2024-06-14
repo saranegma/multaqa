@@ -23,7 +23,6 @@ exports.login = async function (req, res) {
       if (!user || !(await user.comparePassword(req.body.password))) {
         return res.status(401).json({ message: "Authentication failed, Invalid email or password" });
       }
-      const token = jwt.sign({ fname: user.fname, email: user.email, id: user._id, fname: user.fname }, 'sekurityKey');
   
       return res.json({ message: "User logged in successfully", fname: user.fname, data: user });
     } catch (error) {
