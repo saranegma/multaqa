@@ -2,13 +2,11 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const complaintSchema = new mongoose.Schema({
-  // description: {
-  //   type: String,
-  //   required: true,
-  //   trim: true
-  // },
+  
   reason: {
     type: String,
+    enum: ['Spam', 'Fraudulent Event Listings or Scams', 'Harmful Content', 'Violence or Extremism',
+       'Canceled Event', 'Request a Refund', 'Copyright or Trademark Infringement'],
     required: true,
     trim: true
   },
@@ -22,7 +20,21 @@ const complaintSchema = new mongoose.Schema({
         throw new Error('Email is INVALID');
       }
     }
-  }
+  },
+  event_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'event',
+    required: true
+  },user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
+  },
+  },
+{
+  timestamps: true 
+
+
 })
 
 

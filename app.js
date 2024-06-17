@@ -27,6 +27,9 @@ const plan = require('./src/routers/plan.js')
 const userPhone = require('./src/routers/user-phone.js')
 const contactUs = require('./src/routers/contact.js')
 const event = require("./src/routers/event.js")
+const complaint = require('./src/routers/complaint.js')
+const category = require('./src/routers/category.js')
+const categoryEvent = require('./src/routers/events_under_category.js')
 
 app.use(cors());
 // app.use(bodyParser.json());
@@ -63,6 +66,9 @@ app.use(plan)
 app.use(userPhone)
 app.use(contactUs)
 app.use(event)
+app.use(complaint)
+app.use(category)
+app.use(categoryEvent)
 
 ///////////////////////////////////////////////////////////
 app.get('/organizer', (req, res) => res.send('Organizer Page'));

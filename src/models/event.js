@@ -41,7 +41,10 @@ const eventsSchema = new mongoose.Schema({
     image: {
         type: String,
         required: false
-    } // URL
+    }
+    },
+    {
+    timestamps:true
 });
 
 eventsSchema.plugin(help, { inc_field: 'eventNumber' });
