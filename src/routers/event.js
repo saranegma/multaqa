@@ -63,7 +63,7 @@ module.exports = router;
 
 //////////////////////GET (search) BY ID////////////////////////////
 
-/*router.get('/event/:id', async (req, res) => {
+router.get('/events/:id', async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
         if (!event) {
@@ -73,7 +73,7 @@ module.exports = router;
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
-});*/
+});
 
 ////////////////search by  Event's Name////////
 
@@ -157,14 +157,3 @@ router.delete('/event/all', async (req, res) => {
 });
 
 module.exports = router 
-
-        /* photos: {
-        type: [String],  // photo URLs/paths
-        required: false,
-        validate: {
-        validator: function(array) {
-            return array.length > 0 
-        }, 
-        message: 'At least one photo is required'
-        }
-    },*/

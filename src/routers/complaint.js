@@ -4,23 +4,31 @@ const Complaint=require('../models/complaint')
 
 ///////////create report///////
  
-router.post('/report', async(req,res)=>{
-
-try {
-    const reportData= req.body
-   
-    const report= new Complaint(reportData)
-    await report.save()
-    res.status(200).send(report)
-
-} catch (err) {
-    res.status(500).send({error:err.message})
+router.post('/report', async (req, res) => {
+  try {
+    const { reason, email, details, event_id, user_id } = req.body;
     
-}
-})
+    // Create new complaint instance
+    const newComplaint = new Complaint({
+      reason,
+      email,
+      details,
+      event_id,
+      user_id,
+    });
+
+    // Save complaint to database
+    await newComplaint.save();
+    
+    res.status(200).send('Complaint submitted successfully');
+  } catch (error) {
+    console.error('Error saving report:', error);
+    res.status(500).send('Failed to submit complaint');
+  }
+});
 
 /////////retrive all repoerts/////////
-router.get('/report', async (req, res) => {
+router.get('/reports', async (req, res) => {
     try {
       const reports = await Complaint.find({});
       res.status(200).send(reports);
@@ -71,22 +79,5 @@ router.delete('/report', async (req, res) => {
       res.status(500).send({ error: e.message });
     }
   });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports=router

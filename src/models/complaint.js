@@ -21,21 +21,27 @@ const complaintSchema = new mongoose.Schema({
       }
     }
   },
+  details: {
+    type: String,
+    required: false,
+    trim: true,
+  },
   event_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'event',
     required: true
-  },user_id: {
+  },
+  user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true
   },
   },
-{
-  timestamps: true 
+  {
+    timestamps: true 
 
 
-})
+  })
 
 
 const Complaint = mongoose.model('Complaint', complaintSchema)
