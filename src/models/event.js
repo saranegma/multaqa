@@ -1,9 +1,6 @@
-const mongoose = require("mongoose");
-
-const help = require("mongoose-sequence")(mongoose);
-delete mongoose.connection.models['Event'];
-
-const eventsSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+const help=require("mongoose-sequence")(mongoose)
+const eventSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
@@ -11,6 +8,10 @@ const eventsSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true
+    },
+    type: {
+        type: String,
+        required: false
     },
     time: {
         type: String,
@@ -24,31 +25,52 @@ const eventsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    image: {
+        type: [String],
+        required: false,
+        
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'user', 
         required: true
     },
     category_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
-        required: false
+        ref: 'Category', 
+        required: true
     },
     eventNumber: {
         type: Number,
         unique: true
+    },    
+    availableTickets: {
+        type: Number,
+        required: true,
+        default: 0
     },
-    image: {
-        type: String,
-        required: false
+    soldTickets: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    orgRevenue: {
+        type: Number, required: true, default: 0
+    },
+    websiteRevenue:{
+        type: Number, required: true, default: 0
+    },
+    complaint_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'complaint',
+        required:false
     }
-    },
-    {
+},
+{
     timestamps:true
 });
 
-eventsSchema.plugin(help, { inc_field: 'eventNumber' });
-
-const Event = mongoose.model('Event', eventsSchema);
+eventSchema.plugin(help, { inc_field: 'eventNumber' });
+const Event = mongoose.model( 'Event' , eventSchema  )
 
 module.exports = Event;

@@ -18,7 +18,7 @@ const userSchema = new Schema ({
   },
   type: {
     type: String,
-    enum: ['attendee', 'organizer'], 
+    enum: ['Organizer', 'Attendee'], 
     required: false
   },
   email: {
@@ -44,7 +44,8 @@ const userSchema = new Schema ({
               throw new Error("Password must include uppercase , lowercase , numbers , speacial characters")
           }
       }
-  }, phone:{
+  },
+  phone:{
         type: String,
         required: true,
         trim: true,
@@ -53,16 +54,18 @@ const userSchema = new Schema ({
         return /\d{10,15}/.test(v);
         },
         message: props => `${props.value} is not a valid phone number!`}
-    },cvv: {
+    },
+    bankAccount: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'BankAccount',
         required: false
-   },tokens: [{
-    token: {
-        type: String,
-        required: true
-    }
-}],
+   },
+   tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }],
     profileImg: {
         type: String, //URL
         required: false
@@ -75,8 +78,12 @@ const userSchema = new Schema ({
         type: String,
         enum: ['Cairo', 'Giza'],
         required: false
-    }
-
+    },
+    tickets: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ticket',
+        required: false
+    }],
 })
 
 /////////////////generate token///////////////////

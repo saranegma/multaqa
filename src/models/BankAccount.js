@@ -35,12 +35,52 @@ const BankAccountSchema = new mongoose.Schema({
       }
     }
   },
+
   amount: {
     type: Number,
     required: true,
     min: 0
   }
-});
+  ,
+  transactions: [
+    {
+      transactionType: {
+        type: String,
+        required: true
+      },
+      amount: {
+        type: Number,
+        required: true
+      },
+      timestamp: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ]
+  });
+  
+  // Method to deduct amount from bank account and record transaction
+  BankAccountSchema.methods.deductAmountAndRecordTransaction = async function(amountToDeduct) {
+    try {
+      if (this.amount < amountToDeduct) {
+        throw new Error('Insufficient balance');
+      }
+  
+      this.amount -= amountToDeduct;
+  
+      this.transactions.push({
+        transactionType: 'ticket_booking',
+        amount: -amountToDeduct
+      });
+  
+      await this.save();
+    } catch (error) {
+      throw error;
+    }
+  };
+  
+
 
 const BankAccount = mongoose.model('BankAccount', BankAccountSchema);
 
