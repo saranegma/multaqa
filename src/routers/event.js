@@ -13,40 +13,40 @@ const { ObjectId } = mongoose.Types;
 
 router.post('/event', upload.single('image'), async (req, res) => {
     try {
-        const user_id = req.body.user_id;
-        if (!user_id) {
-            throw new Error('user_id is required');
-        }
-        
-        const eventData = {
-            title: req.body.title,
-            description: req.body.description,
-            type: req.body.type,
-            time: req.body.time,
-            date: req.body.date,
-            location: req.body.location,
-            user_id: new ObjectId(user_id), // Create a new ObjectId instance
-            category_id: req.body.category_id ? new ObjectId(req.body.category_id) : undefined, // Create a new ObjectId instance if provided
-            availableTickets: req.body.availableTickets,
-            soldTickets: req.body.soldTickets
-        };
-
-        if (req.file) {
-            eventData.image = req.file.buffer.toString('base64');
-            // Alternatively, store it in a cloud service and save the URL
-          }
+      const user_id = req.body.user_id;
+      if (!user_id) {
+        throw new Error('user_id is required');
+      }
       
-          const event = new Event(eventData);
-          await event.save();
-      
-          // Send back the event with _id in the response
-          res.status(200).json({ event });
-      
-        } catch (e) {
-          console.error('Error creating event:', e);
-          res.status(400).json({ error: e.message });
-        }
-    });
+      const eventData = {
+        title: req.body.title,
+        description: req.body.description,
+        type: req.body.type,
+        time: req.body.time,
+        date: req.body.date,
+        location: req.body.location,
+        user_id: new ObjectId(user_id),
+        category_id: req.body.category_id ? new ObjectId(req.body.category_id) : undefined,
+        availableTickets: req.body.availableTickets,
+        soldTickets: req.body.soldTickets
+      };
+  
+      if (req.file) {
+        eventData.image = req.file.buffer.toString('base64');
+        // Alternatively, store it in a cloud service and save the URL
+      }
+    
+      const event = new Event(eventData);
+      await event.save();
+    
+      // Send back the event with _id in the response
+      res.status(201).json({ event: { ...event.toObject(), _id: event._id } });
+    
+    } catch (e) {
+      console.error('Error creating event:', e);
+      res.status(400).json({ error: e.message });
+    }
+  });
       
 // Get Events
 
@@ -97,26 +97,22 @@ router.get('/event/search', async (req, res) => {
 
 // Update Event
 
-router.put('/event/update/:eventNumber', async (req, res) => {
+router.patch('/event/:id', async (req, res) => {
     try {
-        const eventNumber = req.params.eventNumber;
-        const updateData = req.body;
-
-        const updatedEvent = await Event.findOneAndUpdate(
-            { eventNumber: eventNumber }, // Find the event by eventNumber
-            { $set: updateData }, // Set the fields to be updated
-            { new: true, runValidators: true } // Return the updated document
-        );
-
-        if (!updatedEvent) {
-            return res.status(404).send({ error: 'Event not found' });
-        }
-
-        res.status(200).send(updatedEvent);
-    } catch (e) {
-        res.status(400).send({ error: e.message });
+      const eventId = req.params.id;
+      const updatedData = req.body;
+  
+      const updatedEvent = await Event.findByIdAndUpdate(eventId, updatedData, { new: true });
+  
+      if (!updatedEvent) {
+        return res.status(404).send({ message: 'Event not found' });
+      }
+  
+      res.send(updatedEvent);
+    } catch (error) {
+      res.status(500).send({ message: 'Error updating event', error });
     }
-});
+  });
 
 // Delete Event By ID
 

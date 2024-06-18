@@ -12,34 +12,32 @@ const ticketSchema = new mongoose.Schema ( {
         type: Number,
         required: true
     },
-    name: {
-        type: String
+    title: {
+        type: String,
+        required: true
     },
     start_date: {
-        type: Date
+        type: Date,
+        required: true
     },
     end_date: {
-        type: Date
+        type: Date,
+        required: true
     },
     number_of_tickets: {
-        type: Number
-    },
-    sales_channel: {
-        type: String,
-        required: true,
-        trim:true
-        
+        type: Number,
+        required: true
     },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
         required: true 
-      },
-      eventId: { 
+    },
+    eventId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Event', 
         required: true 
-      },
+    },
 })
 
 const Ticket = mongoose.model( 'Ticket' , ticketSchema  )
