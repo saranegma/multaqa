@@ -57,19 +57,17 @@ router.get('/tickets', async (req, res) => {
     }
 });
 
-// Get Ticket By ID
+// Get Ticket By Event ID
 
-router.get('/tickets/:id', async (req, res) => {
+router.get('/tickets/:eventId/titles', async (req, res) => {
     try {
-        const ticket = await Ticket.findById(req.params.id);
-        if (!ticket) {
-            return res.status(404).send('Unable to find ticket');
-        }
-        res.status(200).send(ticket);
+      const tickets = await Ticket.find({ eventId: req.params.eventId }).select('title');
+      res.status(200).send(tickets);
     } catch (e) {
-        res.status(500).send(e);
+      console.error('Error fetching tickets:', e);
+      res.status(500).send('Error fetching tickets. Please try again later.');
     }
-});
+  });
 
 // Update Ticket By ID
 
