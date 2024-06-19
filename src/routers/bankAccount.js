@@ -1,8 +1,10 @@
-const express=require('express')
-const router= express.Router()
-const BankAccount=require('../models/BankAccount')
+const express = require('express')
+const router = express.Router()
+const BankAccount = require('../models/BankAccount')
+const User = require('../models/user')
 
 // Create Bank Account
+/*
 router.post('/bankAccount', async (req, res) => {
   try {
     const bankAccount = new BankAccount(req.body);
@@ -12,7 +14,32 @@ router.post('/bankAccount', async (req, res) => {
     res.status(400).send({error:err.message});
   }
 });
-  
+*/
+
+router.post('/bankAccount', async (req, res) => {
+  try {
+    // Create new bank account
+    const bankAccount = new BankAccount(req.body);
+    await bankAccount.save();
+
+    // Update the user with the new bank account ID
+    const userId = req.body.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+
+    user.bankAccount = bankAccount._id; // Assign the new bank account ID to the user
+    await user.save();
+
+    // Send the bank account details in the response
+    res.status(201).send(bankAccount);
+  } catch (err) {
+    console.error('Error creating bank account:', err);
+    res.status(400).send({ error: err.message });
+  }
+});
+
 // Retrieve All Bank Accounts
 
 router.get('/bankAccounts', async (req, res) => {

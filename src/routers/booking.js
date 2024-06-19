@@ -19,7 +19,7 @@ const calculateFee = (ticketPrice) => {
 };
 
 router.post('/bookTicket', async (req, res) => {
-  const { userId, bankAccountId, eventId, ticketPrice, ticketQuantity, title, expire } = req.body;
+  const { userId, bankAccountId, eventId, ticketPrice, ticketQuantity, title } = req.body;
 
   try {
     const user = await User.findById(userId);
