@@ -18,7 +18,7 @@ const userSchema = new Schema ({
   },
   type: {
     type: String,
-    enum: ['Organizer', 'Attendee'], 
+    enum: ['Organizer', 'Attendee', 'organizer', 'attendee'], 
     required: false
   },
   email: {

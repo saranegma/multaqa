@@ -18,15 +18,12 @@ const ticketSchema = new mongoose.Schema ( {
     },
     start_date: {
         type: Date,
-        required: true
     },
     end_date: {
         type: Date,
-        required: true
     },
     number_of_tickets: {
         type: Number,
-        required: true
     },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
