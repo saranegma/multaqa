@@ -74,6 +74,25 @@ router.get('/events/:id', async (req, res) => {
     }
 });
 
+// GET Events By UserId
+
+router.get('/events/creator/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const events = await Event.find({ user_id: userId }).select('title description image date');
+
+        if (!events || events.length === 0) {
+            return res.status(404).json({ message: 'No events found for the user' });
+        }
+    
+        res.status(200).json(events);
+    } catch (error) {
+        console.error('Error fetching event details:', error);
+        res.status(500).json({ message: 'Failed to fetch event details' });
+    }
+});
+
 // Search Event By Name
 
 router.get('/event/search', async (req, res) => {

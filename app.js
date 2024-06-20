@@ -32,6 +32,7 @@ const category = require('./src/routers/category.js')
 const categoryEvent = require('./src/routers/events_under_category.js')
 const bankAccount = require('./src/routers/bankAccount.js')
 const booking = require('./src/routers/booking.js')
+const attendeeDashboard=require('./src/routers/attendee-likes.js')
 
 app.use(cors());
 // app.use(bodyParser.json());
@@ -73,6 +74,7 @@ app.use(category)
 app.use(categoryEvent)
 app.use(bankAccount)
 app.use(booking)
+app.use(attendeeDashboard)
 
 ///////////////////////////////////////////////////////////
 app.get('/organizer', (req, res) => res.send('Organizer Page'));
