@@ -25,6 +25,7 @@ router.post('/event', upload.single('image'), async (req, res) => {
         time: req.body.time,
         date: req.body.date,
         location: req.body.location,
+        onlineUrl: req.body.onlineUrl,
         user_id: new ObjectId(user_id),
         category_id: req.body.category_id ? new ObjectId(req.body.category_id) : undefined,
         availableTickets: req.body.availableTickets,

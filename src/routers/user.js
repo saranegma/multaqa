@@ -1,6 +1,8 @@
 const app = require('express');
 const userController = require('../Controllers/userController.js');
 const User = require('../models/user.js')
+const Organizer = require('../models/organizer.js')
+const Attendee = require('../models/attendee.js')
 const auth = require('../middelware/auth.js')
 const session = require('express-session')
 
@@ -18,18 +20,54 @@ router.get('/select-role', function(req, res) {
 
 
 router.post('/role', async function(req, res) {
-    try {
-        const { userId, role } = req.body;
-        await User.findByIdAndUpdate(userId, { type: role });
+  try {
+      const { userId, role } = req.body;
+      const user = await User.findById(userId); // Fetch the user details
+      console.log('Request Body:', req.body);
 
-        if (role === 'Organizer') {
-            res.status(200).send('You are an Organizer');
-        } else {
-            res.status(200).send('You are an Attendee');
-        }
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
+      if (!user) {
+          return res.status(404).send({ message: 'User not found' });
+      }
+
+      await User.findByIdAndUpdate(userId, { type: role });
+
+      if (role === 'Organizer') {
+          const organizer = new Organizer({ user_id: userId ,
+            fname: user.fname,
+              lname: user.lname,
+              email: user.email,
+              phone: user.phone,
+              birthDayDate: user.birthDayDate,
+              bankAccount: user.bankAccount,
+              profileImg: user.profileImg,
+              address: user.address,
+              city: user.city
+          });
+          await organizer.save();
+          res.status(200).send('You are an Organizer');
+      } else {
+          const attendee = new Attendee({
+              user_id: userId,
+              fname: user.fname,
+              lname: user.lname,
+              email: user.email,
+              phone: user.phone,
+              birthDayDate: user.birthDayDate,
+              bankAccount: user.bankAccount,
+              profileImg: user.profileImg,
+              address: user.address,
+              city: user.city
+          });
+          await attendee.save();
+          res.status(200).send('You are an Attendee');
+      }
+  } catch (error) {
+      if (!res.headersSent) {
+          res.status(400).send({ message: error.message });
+      } else {
+          console.error('Error processing request:', error);
+      }
+  }
 });
 
 /////////////login/////////////////
@@ -53,6 +91,21 @@ router.get('/users/email/:email', async (req, res) => {
     try {
       const { email } = req.params;
       const user = await User.findOne({ email }); // Find by email address
+  
+      if (!user) {
+        return res.status(404).send('Unable to find user');
+      }
+      res.status(200).send(user);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+
+  //////////////////////GET BY ID////////////////
+
+router.get('/users/id/:id', async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
   
       if (!user) {
         return res.status(404).send('Unable to find user');

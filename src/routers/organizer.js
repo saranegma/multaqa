@@ -1,18 +1,88 @@
 const express = require('express');
 const Organizer = require('../models/organizer');
 const router = express.Router();
+const Attendee = require('../models/attendee');
+const mongoose = require('mongoose');
 
-////////////////POST/////////////////
+////////////follow////////////////
 
-router.post('/organizers', async (req, res) => {
+    
+router.post('/follow', async (req, res) => {
     try {
-        const organizer = new Organizer(req.body);
-        await organizer.save();
-        res.status(201).send(organizer);
-    } catch (e) {
-        res.status(400).send(e);
+      const { attendee_id, organizer_id } = req.body;
+  
+      if (!attendee_id || !organizer_id) {
+        return res.status(400).json({ error: 'attendee_id and organizer_id are required' });
+      }
+  
+      const attendee = await Attendee.findOne({user_id:attendee_id});
+      
+      const organizer = await Organizer.findOne({user_id:organizer_id});
+  
+      if (!attendee) {
+        return res.status(404).json({ error: 'Attendee not found' });
+      }
+  
+      if (!organizer) {
+        return res.status(404).json({ error: 'Organizer not found' });
+      }
+  
+      if (!attendee.following.includes(organizer_id)) {
+        organizer.followers.push(attendee_id);
+        attendee.following.push(organizer_id);
+      //  organizer.followers.push(attendee_id);
+      }
+  
+      await attendee.save();
+      await organizer.save();
+  
+      res.status(200).json({ message: 'Successfully followed the organizer' });
+    } catch (error) {
+      console.error('Error following organizer:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-});
+  });
+  
+/////////////////unfollow////////////
+router.post('/unfollow', async (req, res) => {
+    try {
+      const { attendee_id, organizer_id } = req.body;
+  
+      if (!attendee_id || !organizer_id) {
+        return res.status(400).json({ error: 'attendee_id and organizer_id are required' });
+      }
+  
+      const attendee = await Attendee.findOne({user_id:attendee_id});
+      const organizer = await Organizer.findOne({user_id:organizer_id});
+  
+      if (!attendee) {
+        return res.status(404).json({ error: 'Attendee not found' });
+      }
+  
+      if (!organizer) {
+        return res.status(404).json({ error: 'Organizer not found' });
+      }
+  
+      const organizerIndex = attendee.following.indexOf(organizer_id);
+    if (organizerIndex !== -1) {
+      attendee.following.splice(organizerIndex, 1);
+    }
+
+    // Remove attendee_id from organizer's followers array
+    const attendeeIndex = organizer.followers.indexOf(attendee_id);
+    if (attendeeIndex !== -1) {
+      organizer.followers.splice(attendeeIndex, 1);
+    }
+
+      await attendee.save();
+      await organizer.save();
+  
+      res.status(200).json({ message: 'Successfully unfollowed the organizer' });
+    } catch (error) {
+      console.error('Error unfollowing organizer:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 
 //////////////////GET//////////////////////////
 
@@ -27,9 +97,9 @@ router.get('/organizers', async (req, res) => {
 
 //////////////////////GET BY ID////////////////////////////
 
-router.get('/organizers/:id', async (req, res) => {
+router.get('/organizer/:id', async (req, res) => {
     try {
-        const organizer = await Organizer.findById(req.params.id);
+        const organizer = await Organizer.findOne({user_id: req.params.id});
         if (!organizer) {
             return res.status(404).send('Unable to find organizer');
         }
@@ -39,12 +109,39 @@ router.get('/organizers/:id', async (req, res) => {
     }
 });
 
+//////////////////////get the followers count/////////
+
+router.get('/followers/:organizer_id', async (req, res) => {
+    try {
+      const organizer_id = req.params.organizer_id;
+  
+      if (!organizer_id) {
+        return res.status(400).json({ error: 'organizer_id is required' });
+      }
+  
+      const organizer = await Organizer.findOne({user_id:organizer_id});
+  
+      if (!organizer) {
+        return res.status(404).json({ error: 'Organizer not found' });
+      }
+  
+      const followersCount = organizer.followers.length;
+  
+      res.status(200).json({ followersCount });
+    } catch (error) {
+      console.error('Error fetching followers count:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 //////////////PATCH//////////////////////////
 
-router.patch('/organizers/:id', async (req, res) => {
+router.patch('/organizer/data/:id', async (req, res) => {
     try {
         const updates = Object.keys(req.body);
         const organizer = await Organizer.findById(req.params.id);
+        console.log(updates);
+        console.log(organizer);
         if (!organizer) {
             return res.status(404).send('No organizer found');
         }
@@ -71,6 +168,7 @@ router.delete('/organizers/:id', async (req, res) => {
     }
 });
 
+
 ////////////////////DELETE ALL/////////
 
 // Delete all organizers
@@ -85,5 +183,20 @@ router.delete('/organizers', async (req, res) => {
         res.status(500).send(e);
     }
 });
+////////////////POST/////////////////
+
+router.post('/organizers', async (req, res) => {
+    try {
+        const organizer = new Organizer(req.body);
+        await organizer.save();
+        res.status(201).send(organizer);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+
+
+
 
 module.exports = router;

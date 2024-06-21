@@ -95,7 +95,32 @@ router.delete('/attendee/saveEvent', async (req, res) => {
     }
   });
 
-
+  router.get('/attendee/booked-tickets/:user_id', async (req, res) => {
+    try {
+      const userId = req.params.user_id;
+      
+      const attendee = await Attendee.findOne({ user_id: userId })
+                                     .populate({
+                                       path:
+                                        'bookedTickets',
+                                      populate: {
+                                         path: 'eventId',
+                                         select: 'title time date',
+                                         model: 'Event',
+                                         
+                                       }
+                                    }
+                                    );
+      if (!attendee) {
+        return res.status(404).json({ error: 'Attendee not found' });
+      }
+      
+      res.status(200).json({ bookedTickets: attendee.bookedTickets });
+    } catch (e) {
+      console.error('Error fetching booked tickets:', e);
+      res.status(400).json({ error: e.message });
+    }
+  });
 
 
 

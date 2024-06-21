@@ -23,7 +23,11 @@ const eventSchema = new mongoose.Schema({
     },
     location: {
         type: String,
-        required: true
+        required: false
+    },
+    onlineUrl: {
+        type: String,
+        required: false
     },
     image: {
         type: String,
