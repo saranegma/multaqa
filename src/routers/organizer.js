@@ -136,22 +136,27 @@ router.get('/followers/:organizer_id', async (req, res) => {
 
 //////////////PATCH//////////////////////////
 
-router.patch('/organizer/data/:id', async (req, res) => {
-    try {
-        const updates = Object.keys(req.body);
-        const organizer = await Organizer.findById(req.params.id);
-        console.log(updates);
-        console.log(organizer);
-        if (!organizer) {
-            return res.status(404).send('No organizer found');
-        }
+router.patch('/organizer/:id', async (req, res) => {
+  try {
+      const updates = Object.keys(req.body);
+      const organizer = await Organizer.findOne({ user_id: req.params.id });
+      
+      if (!organizer) {
+          console.log(`Organizer with ID ${req.params.id} not found`);
+          return res.status(404).send('No organizer found');
+      }
 
-        updates.forEach((update) => (organizer[update] = req.body[update]));
-        await organizer.save();
-        res.status(200).send(organizer);
-    } catch (error) {
-        res.status(400).send(error);
-    }
+      console.log(`Updating organizer with ID ${req.params.id}`);
+      updates.forEach((update) => {
+          organizer[update] = req.body[update];
+      });
+
+      await organizer.save();
+      res.status(200).send(organizer);
+  } catch (error) {
+      console.error(`Error updating organizer: ${error}`);
+      res.status(400).send(error);
+  }
 });
 
 ////////////////////////////////DELETE///////////////////////
