@@ -1,5 +1,4 @@
-const mongoose = require('mongoose')
-const validator = require('validator')
+const mongoose = require('mongoose');
 
 const planSchema = new mongoose.Schema({
   name: {
@@ -19,15 +18,24 @@ const planSchema = new mongoose.Schema({
   duration: {
     type: Number,
     required: true,
-    min: 1
+    enum: [0, 6, 12]
   },
   price: {
     type: Number,
     required: true,
     min: 0
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['Basic', 'Standard', 'Premium'], 
   }
-})
+});
 
-const Plan = mongoose.model('Plan', planSchema)
+planSchema.methods.getPlanCost = function() {
+  return this.price;
+};
 
-module.exports = Plan
+const Plan = mongoose.model('Plan', planSchema);
+
+module.exports = Plan;

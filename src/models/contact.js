@@ -22,6 +22,10 @@ const contactSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
+  },
+  admin_id:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'Admin'
   }
 })
 

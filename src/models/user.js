@@ -84,6 +84,10 @@ const userSchema = new Schema ({
         ref: 'Ticket',
         required: false
     }],
+    admin_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Admin'
+    }
 })
 
 /////////////////generate token///////////////////

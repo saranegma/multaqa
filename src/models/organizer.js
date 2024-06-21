@@ -113,7 +113,11 @@ const organizerSchema = new mongoose.Schema({
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Attendee'
-    }]
+    }],
+    chosenPlan: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Plans'
+    },
 
 
 }, { timestamps: true });
