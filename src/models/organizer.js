@@ -79,7 +79,7 @@ const organizerSchema = new mongoose.Schema({
         required: false
     },
     bio:{
-        type:String,
+        type: String,
         required:false
     },
     website_url: {

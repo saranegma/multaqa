@@ -4,66 +4,66 @@ const router = express.Router();
 const Attendee = require('../models/attendee');
 const mongoose = require('mongoose');
 
-////////////follow////////////////
-
-    
 router.post('/follow', async (req, res) => {
-    try {
-      const { attendee_id, organizer_id } = req.body;
-  
-      if (!attendee_id || !organizer_id) {
-        return res.status(400).json({ error: 'attendee_id and organizer_id are required' });
-      }
-  
-      const attendee = await Attendee.findOne({user_id:attendee_id});
-      
-      const organizer = await Organizer.findOne({user_id:organizer_id});
-  
-      if (!attendee) {
-        return res.status(404).json({ error: 'Attendee not found' });
-      }
-  
-      if (!organizer) {
-        return res.status(404).json({ error: 'Organizer not found' });
-      }
-  
-      if (!attendee.following.includes(organizer_id)) {
-        organizer.followers.push(attendee_id);
-        attendee.following.push(organizer_id);
-      //  organizer.followers.push(attendee_id);
-      }
-  
-      await attendee.save();
-      await organizer.save();
-  
-      res.status(200).json({ message: 'Successfully followed the organizer' });
-    } catch (error) {
-      console.error('Error following organizer:', error);
-      res.status(500).json({ error: 'Internal server error' });
+  try {
+    const { attendee_id, organizer_id } = req.body;
+
+    if (!attendee_id || !organizer_id) {
+      return res.status(400).json({ error: 'attendee_id and organizer_id are required' });
     }
-  });
-  
-/////////////////unfollow////////////
+
+    const attendee = await Attendee.findOne({ user_id: attendee_id });
+    const organizer = await Organizer.findOne({ user_id: organizer_id });
+
+    if (!attendee) {
+      return res.status(404).json({ error: 'Attendee not found' });
+    }
+
+    if (!organizer) {
+      return res.status(404).json({ error: 'Organizer not found' });
+    }
+
+    // Ensure attendee.following is initialized as an array
+    attendee.following = attendee.following || [];
+
+    if (!attendee.following.includes(organizer_id)) {
+      organizer.followers.push(attendee_id);
+      attendee.following.push(organizer_id);
+    }
+
+    await attendee.save();
+    await organizer.save();
+
+    res.status(200).json({ message: 'Successfully followed the organizer' });
+  } catch (error) {
+    console.error('Error following organizer:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 router.post('/unfollow', async (req, res) => {
-    try {
-      const { attendee_id, organizer_id } = req.body;
-  
-      if (!attendee_id || !organizer_id) {
-        return res.status(400).json({ error: 'attendee_id and organizer_id are required' });
-      }
-  
-      const attendee = await Attendee.findOne({user_id:attendee_id});
-      const organizer = await Organizer.findOne({user_id:organizer_id});
-  
-      if (!attendee) {
-        return res.status(404).json({ error: 'Attendee not found' });
-      }
-  
-      if (!organizer) {
-        return res.status(404).json({ error: 'Organizer not found' });
-      }
-  
-      const organizerIndex = attendee.following.indexOf(organizer_id);
+  try {
+    const { attendee_id, organizer_id } = req.body;
+
+    if (!attendee_id || !organizer_id) {
+      return res.status(400).json({ error: 'attendee_id and organizer_id are required' });
+    }
+
+    const attendee = await Attendee.findOne({ user_id: attendee_id });
+    const organizer = await Organizer.findOne({ user_id: organizer_id });
+
+    if (!attendee) {
+      return res.status(404).json({ error: 'Attendee not found' });
+    }
+
+    if (!organizer) {
+      return res.status(404).json({ error: 'Organizer not found' });
+    }
+
+    // Ensure attendee.following is initialized as an array
+    attendee.following = attendee.following || [];
+
+    const organizerIndex = attendee.following.indexOf(organizer_id);
     if (organizerIndex !== -1) {
       attendee.following.splice(organizerIndex, 1);
     }
@@ -74,15 +74,16 @@ router.post('/unfollow', async (req, res) => {
       organizer.followers.splice(attendeeIndex, 1);
     }
 
-      await attendee.save();
-      await organizer.save();
-  
-      res.status(200).json({ message: 'Successfully unfollowed the organizer' });
-    } catch (error) {
-      console.error('Error unfollowing organizer:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
+    await attendee.save();
+    await organizer.save();
+
+    res.status(200).json({ message: 'Successfully unfollowed the organizer' });
+  } catch (error) {
+    console.error('Error unfollowing organizer:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 //////////////////GET//////////////////////////
 
