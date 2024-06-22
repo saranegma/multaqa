@@ -13,7 +13,7 @@ const deleteRequestSchema = new Schema({
   },
   target_type: {
     type: String,
-    enum: ['User Account', 'Event'],
+    enum: ['User', 'Event'],
     required: true
   },
   reason: {

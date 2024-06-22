@@ -87,7 +87,7 @@ const organizerSchema = new mongoose.Schema({
     },
     companyType:{
         type:String,
-        enum:['individual','corperate','non-profit'],
+        enum:['individual','corporate','non-profit'],
         required:false
     },
     accountNumber:{

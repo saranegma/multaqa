@@ -81,6 +81,7 @@ router.get('/events/creator/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
+        // Fetch events based on user_id and select specific fields
         const events = await Event.find({ user_id: userId }).select('title description image date');
 
         if (!events || events.length === 0) {
@@ -93,7 +94,6 @@ router.get('/events/creator/:userId', async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch event details' });
     }
 });
-
 // Search Event By Name
 
 router.get('/event/search', async (req, res) => {
