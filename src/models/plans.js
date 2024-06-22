@@ -12,7 +12,7 @@ const planSchema = new mongoose.Schema({
   },
   noOfTickets: {
     type: Number,
-    required: true,
+    required: false,
     min: 0
   },
   duration: {
@@ -29,6 +29,10 @@ const planSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ['Basic', 'Standard', 'Premium'], 
+  },
+  subscriptions: {
+    type: Number,
+    default: 0
   }
 });
 

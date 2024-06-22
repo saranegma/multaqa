@@ -3,8 +3,70 @@ const Plan = require('../models/plans');
 const router = express.Router();
 const Organizer = require('../models/organizer');
 const BankAccount = require('../models/BankAccount');
+const mongoose = require('mongoose');
+const Admin =require('../models/admin');
+const User = require('../models/user');
 
-router.post('/plans/:organizerEmail', async (req, res) => {
+router.post('/organizer/subscribe', async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    const { user_id, plan_id } = req.body;
+
+    // Find the user by user_id
+    const user = await User.findById(user_id).session(session);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if user has a bank account
+    const bankAccount = await BankAccount.findById(user.bankAccount).session(session);
+    if (!bankAccount) {
+      throw new Error('Bank account not found');
+    }
+
+    // Find the organizer by user_id
+    const organizer = await Organizer.findOne({ user_id }).session(session);
+    if (!organizer) {
+      throw new Error('Organizer not found');
+    }
+
+    // Find the plan by plan_id
+    const plan = await Plan.findById(plan_id).session(session);
+    if (!plan) {
+      throw new Error('Plan not found');
+    }
+
+    // Deduct the plan cost from the bank account
+    await bankAccount.deductAmountForSubscription(plan.price);
+
+    // Update the organizer's subscription status
+    organizer.subscribtion = true;
+    organizer.subscribe_id = plan_id;
+    await organizer.save({ session });
+
+    // Increment the subscription count in the plan
+    plan.subscriptions = (plan.subscriptions || 0) + 1;
+    await plan.save({ session });
+
+    // Increment the admin's revenue
+    await Admin.updateMany({}, { $inc: { subscribtionRevenue: plan.price } }).session(session);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).send({ message: 'Subscription successful' });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).send({ message: error.message });
+  }
+});
+
+module.exports = router;
+
+/*router.post('/plans/:organizerEmail', async (req, res) => {
   const { name, features, duration, type } = req.body;
   const organizerEmail = req.params.organizerEmail; 
 
@@ -61,7 +123,7 @@ router.post('/plans/:organizerEmail', async (req, res) => {
       // Handle errors
       res.status(500).send({ message: 'Error creating and choosing plan', error: error.message });
   }
-});
+});*/
 
 //////////////////GET//////////////////////////
 

@@ -69,7 +69,8 @@ const adminSchema = new Schema({
   },
   bankaccNumber:{
     type:Number
-  }
+  },
+  subscribtionRevenue:{ type: Number,  default: 0 }
 });
 
 adminSchema.methods.generateAuthToken = async function() {

@@ -38,7 +38,8 @@ const BankAccountSchema = new mongoose.Schema({
 
   amount: {
     type: Number,
-    default: 3000
+    required: true,
+    min: 0
   }
   ,
   transactions: [
@@ -49,7 +50,9 @@ const BankAccountSchema = new mongoose.Schema({
       },
       amount: {
         type: Number,
-        required: true
+        required: true,
+        default:3000
+        
       },
       timestamp: {
         type: Date,
@@ -78,7 +81,26 @@ const BankAccountSchema = new mongoose.Schema({
       throw error;
     }
   };
-  
+  // New method for deducting subscription amount
+BankAccountSchema.methods.deductAmountForSubscription = async function(amountToDeduct) {
+  try {
+    if (this.amount < amountToDeduct) {
+      throw new Error('Insufficient balance');
+    }
+
+    this.amount -= amountToDeduct;
+
+    this.transactions.push({
+      transactionType: 'subscription',
+      amount: -amountToDeduct
+    });
+
+    await this.save();
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 const BankAccount = mongoose.model('BankAccount', BankAccountSchema);
