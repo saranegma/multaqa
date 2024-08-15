@@ -50,10 +50,9 @@ const BankAccountSchema = new mongoose.Schema({
       },
       amount: {
         type: Number,
-        required: true,
         default:3000
         
-      },
+      }, 
       timestamp: {
         type: Date,
         default: Date.now
